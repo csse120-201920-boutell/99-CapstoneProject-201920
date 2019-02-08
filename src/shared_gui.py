@@ -10,7 +10,7 @@
     -- Lower-level code to interact with the EV3 robot library.
 
   Author:  Your professors (for the framework and lower-level code)
-    and PUT_YOUR_NAMES_HERE.
+    and Matt Boutell.
   Winter term, 2018-2019.
 """
 
@@ -110,12 +110,111 @@ def get_arm_frame(window, mqtt_sender):
     calibrate_arm_button.grid(row=3, column=2)
 
     # Set the Button callbacks:
+    move_arm_button["command"] = lambda: handle_move_arm_to_position(position_entry, mqtt_sender)
     raise_arm_button["command"] = lambda: handle_raise_arm(mqtt_sender)
     lower_arm_button["command"] = lambda: handle_lower_arm(mqtt_sender)
     calibrate_arm_button["command"] = lambda: handle_calibrate_arm(mqtt_sender)
-    move_arm_button["command"] = lambda: handle_move_arm_to_position(
-        position_entry, mqtt_sender)
 
+    return frame
+
+
+def get_sensor_drive_frame(window, mqtt_sender):
+    frame = ttk.Frame(window, padding=10, borderwidth=5, relief="ridge")
+    frame.grid()
+    frame_label = ttk.Label(frame, text="Sensor Drive")
+    frame_label.grid(row=0, column=0)
+
+    label1 = ttk.Label(frame, text="Distance (inches):")
+    label1.grid(row=1, column=0)
+    entry1 = ttk.Entry(frame, width=8)
+    entry1.grid(row=1, column=1)
+
+    label2 = ttk.Label(frame, text="Speed (0 to 100):")
+    label2.grid(row=2, column=0)
+    entry2 = ttk.Entry(frame, width=8)
+    entry2.grid(row=2, column=1)
+
+    drive_until_close_button = ttk.Button(frame, text="Drive forward until closer")
+    drive_until_close_button.grid(row=3, column=0)
+    drive_until_close_button["command"] = lambda: handle_drive_until_closer(
+        mqtt_sender, entry1, entry2)
+
+    drive_until_farther_button = ttk.Button(frame, text="Drive backward until farther")
+    drive_until_farther_button.grid(row=4, column=0)
+    drive_until_farther_button["command"] = lambda: handle_drive_until_farther(
+        mqtt_sender, entry1, entry2)
+
+    drive_until_there_button = ttk.Button(frame, text="Drive until there")
+    drive_until_there_button.grid(row=5, column=0)
+    drive_until_there_button["command"] = lambda: handle_drive_until_there(
+        mqtt_sender, entry1, entry2)
+    return frame
+
+
+def get_drive_system_frame(window, mqtt_sender):
+    frame = ttk.Frame(window, padding=10, borderwidth=5, relief="ridge")
+    frame.grid()
+    frame_label = ttk.Label(frame, text="Drive System")
+    frame_label.grid(row=0, column=0)
+    label1 = ttk.Label(frame, text="Time (seconds):")
+    label1.grid(row=1, column=0)
+    entry1 = ttk.Entry(frame, width=8)
+    entry1.grid(row=1, column=1)
+    label2 = ttk.Label(frame, text="Speed (0-100):")
+    label2.grid(row=2, column=0)
+    entry2 = ttk.Entry(frame, width=8)
+    entry2.grid(row=2, column=1)
+    label3 = ttk.Label(frame, text="Distance (inches):")
+    label3.grid(row=3, column=0)
+    entry3 = ttk.Entry(frame, width=8)
+    entry3.grid(row=3, column=1)
+
+    drive_for_time_button = ttk.Button(frame, text="Go for time")
+    drive_for_time_button.grid(row=4, column=0)
+    drive_for_time_button["command"] = lambda: handle_drive_for_time(
+        mqtt_sender, entry1, entry2)
+
+    drive_for_inches_using_time_button = ttk.Button(frame, text="Go distance using time")
+    drive_for_inches_using_time_button.grid(row=5, column=0)
+    drive_for_inches_using_time_button["command"] = lambda: handle_drive_for_inches_using_time(
+        mqtt_sender, entry2, entry3)
+
+    drive_for_inches_using_encoder_button = ttk.Button(frame, text="Go distance using encoder")
+    drive_for_inches_using_encoder_button.grid(row=5, column=0)
+    drive_for_inches_using_encoder_button["command"] = lambda: handle_drive_for_inches_using_encoder(
+        mqtt_sender, entry2, entry3)
+    return frame
+
+
+def get_sound_system_frame(window, mqtt_sender):
+    frame = ttk.Frame(window, padding=10, borderwidth=5, relief="ridge")
+    frame.grid()
+    frame_label = ttk.Label(frame, text="Sound System")
+    frame_label.grid(row=0, column=1)
+    # label1 = ttk.Label(frame, text="Seconds:")
+    # label1.grid(row=1, column=0)
+    # entry1 = ttk.Entry(frame, width=8)
+    # entry1.grid(row=1, column=1)
+    # label2 = ttk.Label(frame, text="Speed:")
+    # label2.grid(row=2, column=0)
+    # entry2 = ttk.Entry(frame, width=8)
+    # entry2.grid(row=2, column=1)
+    # label3 = ttk.Label(frame, text="Distance:")
+    # label3.grid(row=3, column=0)
+    # entry3 = ttk.Entry(frame, width=8)
+    # entry3.grid(row=3, column=1)
+    #
+    # drive_for_time_button = ttk.Button(frame, text="Go for time")
+    # drive_for_time_button.grid(row=4, column=0)
+    # drive_for_time_button["command"] = lambda: handle_drive_for_time(mqtt_sender, entry1, entry2)
+    #
+    # drive_for_inches_using_time_button = ttk.Button(frame, text="Go distance using time")
+    # drive_for_inches_using_time_button.grid(row=5, column=0)
+    # drive_for_inches_using_time_button["command"] = lambda: handle_drive_for_inches_using_time(mqtt_sender, entry2, entry3)
+    #
+    # drive_for_inches_using_encoder_button = ttk.Button(frame, text="Go distance using encoder")
+    # drive_for_inches_using_encoder_button.grid(row=5, column=0)
+    # drive_for_inches_using_encoder_button["command"] = lambda: handle_drive_for_inches_using_encoder(mqtt_sender, entry2, entry3)
     return frame
 
 
@@ -153,6 +252,7 @@ def get_control_frame(window, mqtt_sender):
 ###############################################################################
 ###############################################################################
 
+
 ###############################################################################
 # Handlers for Buttons in the Teleoperation frame.
 ###############################################################################
@@ -164,6 +264,8 @@ def handle_forward(left_entry_box, right_entry_box, mqtt_sender):
       :type  right_entry_box:  ttk.Entry
       :type  mqtt_sender:      com.MqttClient
     """
+    print("gui forward handler", left_entry_box.get(), right_entry_box.get())
+    mqtt_sender.send_message("go", [left_entry_box.get(), right_entry_box.get()])
 
 
 def handle_backward(left_entry_box, right_entry_box, mqtt_sender):
@@ -174,6 +276,11 @@ def handle_backward(left_entry_box, right_entry_box, mqtt_sender):
       :type  right_entry_box:  ttk.Entry
       :type  mqtt_sender:      com.MqttClient
     """
+    print("gui backward handler", left_entry_box.get(), right_entry_box.get())
+    left = -int(left_entry_box.get())
+    right = -int(right_entry_box.get())
+    mqtt_sender.send_message("go", [str(left), str(right)])
+
 
 def handle_left(left_entry_box, right_entry_box, mqtt_sender):
     """
@@ -183,6 +290,10 @@ def handle_left(left_entry_box, right_entry_box, mqtt_sender):
       :type  right_entry_box:  ttk.Entry
       :type  mqtt_sender:      com.MqttClient
     """
+    print("gui left handler:", left_entry_box.get(), right_entry_box.get())
+    left = -int(left_entry_box.get())
+    right = int(right_entry_box.get())
+    mqtt_sender.send_message("go", [str(left), str(right)])
 
 
 def handle_right(left_entry_box, right_entry_box, mqtt_sender):
@@ -193,6 +304,10 @@ def handle_right(left_entry_box, right_entry_box, mqtt_sender):
       :type  right_entry_box:  ttk.Entry
       :type  mqtt_sender:      com.MqttClient
     """
+    print("gui right handler:", left_entry_box.get(), right_entry_box.get())
+    left = int(left_entry_box.get())
+    right = -int(right_entry_box.get())
+    mqtt_sender.send_message("go", [str(left), str(right)])
 
 
 def handle_stop(mqtt_sender):
@@ -200,6 +315,8 @@ def handle_stop(mqtt_sender):
     Tells the robot to stop.
       :type  mqtt_sender:  com.MqttClient
     """
+    print("gui stop")
+    mqtt_sender.send_message("stop", [])
 
 
 ###############################################################################
@@ -210,6 +327,8 @@ def handle_raise_arm(mqtt_sender):
     Tells the robot to raise its Arm until its touch sensor is pressed.
       :type  mqtt_sender:  com.MqttClient
     """
+    print("gui raise arm")
+    mqtt_sender.send_message("raise_arm")
 
 
 def handle_lower_arm(mqtt_sender):
@@ -217,6 +336,8 @@ def handle_lower_arm(mqtt_sender):
     Tells the robot to lower its Arm until it is all the way down.
       :type  mqtt_sender:  com.MqttClient
     """
+    print("gui lower arm")
+    mqtt_sender.send_message("lower_arm")
 
 
 def handle_calibrate_arm(mqtt_sender):
@@ -226,6 +347,8 @@ def handle_calibrate_arm(mqtt_sender):
     all the way down, and then to mark taht position as position 0.
       :type  mqtt_sender:  com.MqttClient
     """
+    print("gui calibrate arm")
+    mqtt_sender.send_message("calibrate_arm")
 
 
 def handle_move_arm_to_position(arm_position_entry, mqtt_sender):
@@ -235,6 +358,8 @@ def handle_move_arm_to_position(arm_position_entry, mqtt_sender):
       :type  arm_position_entry  ttk.Entry
       :type  mqtt_sender:        com.MqttClient
     """
+    print("gui move arm to position", arm_position_entry.get())
+    mqtt_sender.send_message("move_arm_to_position", [arm_position_entry.get()])
 
 
 ###############################################################################
@@ -245,6 +370,7 @@ def handle_quit(mqtt_sender):
     Tell the robot's program to stop its loop (and hence quit).
       :type  mqtt_sender:  com.MqttClient
     """
+    mqtt_sender.send_message("quit")
 
 
 def handle_exit(mqtt_sender):
@@ -253,3 +379,53 @@ def handle_exit(mqtt_sender):
     Then exit this program.
       :type mqtt_sender: com.MqttClient
     """
+    handle_quit(mqtt_sender)
+    exit(code=0)
+
+
+###############################################################################
+# Handlers for Buttons in the Sensor Drive frame.
+###############################################################################
+def handle_drive_until_closer(mqtt_sender, distance_entry, speed_entry):
+    print("gui drive until closer")
+    mqtt_sender.send_message(
+        "drive_until_closer",
+        [distance_entry.get(), speed_entry.get()])
+
+
+def handle_drive_until_farther(mqtt_sender, distance_entry, speed_entry):
+    print("gui drive until farther")
+    mqtt_sender.send_message(
+        "drive_until_farther",
+        [distance_entry.get(), speed_entry.get()])
+
+
+def handle_drive_until_there(mqtt_sender, distance_entry, speed_entry):
+    print("gui drive until there")
+    mqtt_sender.send_message(
+        "drive_until_there",
+        [distance_entry.get(), speed_entry.get()])
+
+
+###############################################################################
+# Handlers for Buttons in the Drive System frame.
+###############################################################################
+def handle_drive_for_time(mqtt_sender, time_entry, speed_entry):
+    print("gui drive for time")
+    mqtt_sender.send_message(
+        "drive_until_close",
+        [time_entry.get(), speed_entry.get()])
+
+
+def handle_drive_for_inches_using_time(mqtt_sender, speed_entry, distance_entry):
+    print("gui drive for inches using time")
+    mqtt_sender.send_message(
+        "drive_for_inches_using_time",
+        [speed_entry.get(), distance_entry.get()])
+
+
+def handle_drive_for_inches_using_encoder(mqtt_sender, speed_entry, distance_entry):
+    print("gui drive for inches using encoder")
+    mqtt_sender.send_message(
+        "drive_for_inches_using_encoder",
+        [speed_entry.get(), distance_entry.get()])
