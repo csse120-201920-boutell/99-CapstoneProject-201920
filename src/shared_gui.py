@@ -134,20 +134,45 @@ def get_sensor_drive_frame(window, mqtt_sender):
     entry2 = ttk.Entry(frame, width=8)
     entry2.grid(row=2, column=1)
 
+    label3 = ttk.Label(frame, text="Area of blob:")
+    label3.grid(row=3, column=0)
+    entry3 = ttk.Entry(frame, width=8)
+    entry3.grid(row=3, column=1)
+
     drive_until_close_button = ttk.Button(frame, text="Drive forward until closer")
-    drive_until_close_button.grid(row=3, column=0)
+    drive_until_close_button.grid(row=4, column=0)
     drive_until_close_button["command"] = lambda: handle_drive_until_closer(
         mqtt_sender, entry1, entry2)
 
     drive_until_farther_button = ttk.Button(frame, text="Drive backward until farther")
-    drive_until_farther_button.grid(row=4, column=0)
+    drive_until_farther_button.grid(row=5, column=0)
     drive_until_farther_button["command"] = lambda: handle_drive_until_farther(
         mqtt_sender, entry1, entry2)
 
-    drive_until_there_button = ttk.Button(frame, text="Drive until there")
-    drive_until_there_button.grid(row=5, column=0)
+    drive_until_there_button = ttk.Button(frame, text="Drive until close")
+    drive_until_there_button.grid(row=6, column=0)
     drive_until_there_button["command"] = lambda: handle_drive_until_there(
         mqtt_sender, entry1, entry2)
+
+    # TODO: Add driving using color sensor
+
+
+
+    show_camera_blob_button = ttk.Button(frame, text="Show camera blob on robot")
+    show_camera_blob_button.grid(row=7, column=0)
+    show_camera_blob_button["command"] = lambda: handle_show_camera_blob(
+        mqtt_sender)
+
+    spin_clockwise_until_see_button= ttk.Button(frame, text="Spin clockwise until see blob")
+    spin_clockwise_until_see_button.grid(row=8, column=0)
+    spin_clockwise_until_see_button["command"] = lambda: handle_spin_clockwise_until_see(
+        mqtt_sender, entry2, entry3)
+
+    spin_counter_clockwise_until_see_button= ttk.Button(frame, text="Spin counterclockwise until see blob")
+    spin_counter_clockwise_until_see_button.grid(row=9, column=0)
+    spin_counter_clockwise_until_see_button["command"] = lambda: handle_spin_counterclockwise_until_see(
+        mqtt_sender, entry2, entry3)
+
     return frame
 
 
@@ -217,6 +242,37 @@ def get_sound_system_frame(window, mqtt_sender):
     # drive_for_inches_using_encoder_button["command"] = lambda: handle_drive_for_inches_using_encoder(mqtt_sender, entry2, entry3)
     return frame
 
+
+def get_line_following_frame(window, mqtt_sender):
+    frame = ttk.Frame(window, padding=10, borderwidth=5, relief="ridge")
+    frame.grid()
+    frame_label = ttk.Label(frame, text="Line following")
+    frame_label.grid(row=0, column=1)
+    # label1 = ttk.Label(frame, text="Seconds:")
+    # label1.grid(row=1, column=0)
+    # entry1 = ttk.Entry(frame, width=8)
+    # entry1.grid(row=1, column=1)
+    # label2 = ttk.Label(frame, text="Speed:")
+    # label2.grid(row=2, column=0)
+    # entry2 = ttk.Entry(frame, width=8)
+    # entry2.grid(row=2, column=1)
+    # label3 = ttk.Label(frame, text="Distance:")
+    # label3.grid(row=3, column=0)
+    # entry3 = ttk.Entry(frame, width=8)
+    # entry3.grid(row=3, column=1)
+    #
+    bang_bang_button = ttk.Button(frame, text="Bang-bang drive")
+    bang_bang_button.grid(row=4, column=0)
+    bang_bang_button["command"] = lambda: handle_bang_bang(mqtt_sender)
+
+    p_control_button = ttk.Button(frame, text="P-control drive")
+    p_control_button.grid(row=5, column=0)
+    p_control_button["command"] = lambda: handle_p_control(mqtt_sender)
+
+    pd_control_button = ttk.Button(frame, text="PD-control drive")
+    pd_control_button.grid(row=5, column=0)
+    pd_control_button["command"] = lambda: handle_pd_control(mqtt_sender)
+    return frame
 
 def get_control_frame(window, mqtt_sender):
     """
@@ -407,6 +463,22 @@ def handle_drive_until_there(mqtt_sender, distance_entry, speed_entry):
         [distance_entry.get(), speed_entry.get()])
 
 
+def handle_show_camera_blob(mqtt_sender):
+    print("gui show_camera_blob")
+    mqtt_sender.send_message("show_camera_blob")
+
+
+def handle_spin_clockwise_until_see(mqtt_sender, speed_entry, blob_entry):
+    print("gui handle_spin_clockwise_until_see", speed_entry.get(), blob_entry.get())
+    mqtt_sender.send_message("spin_clockwise_until_see", [speed_entry.get(), blob_entry.get()])
+
+
+def handle_spin_counterclockwise_until_see(mqtt_sender, speed_entry, blob_entry):
+    print("gui handle_spin_counterclockwise_until_see", speed_entry.get(), blob_entry.get())
+    mqtt_sender.send_message("spin_counterclockwise_until_see", [speed_entry.get(), blob_entry.get()])
+
+
+
 ###############################################################################
 # Handlers for Buttons in the Drive System frame.
 ###############################################################################
@@ -429,3 +501,15 @@ def handle_drive_for_inches_using_encoder(mqtt_sender, speed_entry, distance_ent
     mqtt_sender.send_message(
         "drive_for_inches_using_encoder",
         [speed_entry.get(), distance_entry.get()])
+
+def handle_bang_bang(mqtt_sender):
+    print("gui bang-bang")
+    mqtt_sender.send_message("bang_bang")
+
+def handle_p_control(mqtt_sender):
+    print("gui p-control")
+    mqtt_sender.send_message("p_control")
+
+def handle_pd_control(mqtt_sender):
+    print("gui pd-control")
+    mqtt_sender.send_message("pd_control")

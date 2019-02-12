@@ -50,13 +50,14 @@ def main():
     # Frames that are particular to my individual contributions to the project.
     # -------------------------------------------------------------------------
     # DONE: Implement and call get_my_frames(...)
-    sensor_drive_frame, drive_system_frame, sound_system_frame = get_my_frames(main_frame, mqtt_sender)
+    sensor_drive_frame, drive_system_frame, sound_system_frame, line_following_frame = get_my_frames(
+        main_frame, mqtt_sender)
 
     # -------------------------------------------------------------------------
     # Grid the frames.
     # -------------------------------------------------------------------------
     grid_frames([teleop_frame, arm_frame, sensor_drive_frame,
-                 drive_system_frame, sound_system_frame, control_frame])
+                 drive_system_frame, sound_system_frame, line_following_frame, control_frame])
 
     # -------------------------------------------------------------------------
     # The event loop:
@@ -73,14 +74,17 @@ def get_shared_frames(main_frame, mqtt_sender):
 
 def grid_frames(frames):
     for k in range(len(frames)):
-        frames[k].grid(row=k, column=0)
-
+        if k < 4:
+            frames[k].grid(row=k, column=0)
+        else:
+            frames[k].grid(row=k-4, column=1)
 
 def get_my_frames(main_frame, mqtt_sender):
     sensor_drive_frame = shared_gui.get_sensor_drive_frame(main_frame, mqtt_sender)
     drive_system_frame = shared_gui.get_drive_system_frame(main_frame, mqtt_sender)
     sound_system_frame = shared_gui.get_sound_system_frame(main_frame, mqtt_sender)
-    return sensor_drive_frame, drive_system_frame, sound_system_frame
+    line_following_frame = shared_gui.get_line_following_frame(main_frame, mqtt_sender)
+    return sensor_drive_frame, drive_system_frame, sound_system_frame, line_following_frame
 
 
 # -----------------------------------------------------------------------------

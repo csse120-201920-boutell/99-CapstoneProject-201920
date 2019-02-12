@@ -68,3 +68,16 @@ class Delegate(object):
             int(distance),
             int(speed))
 
+    def show_camera_blob(self):
+        print("Delegate receives show_camera_blob")
+        self.robot.drive_system.display_camera_data()
+
+    def spin_clockwise_until_see(self, speed, blob):
+        print("Delegate receives spin_clockwise_until_see")
+        self.robot.drive_system.spin_clockwise_until_sees_object(int(speed), int(blob))
+
+    def handle_spin_counterclockwise_until_see(self, speed, blob):
+        print("Delegate receives spin_counterclockwise_until_see")
+        self.robot.drive_system.spin_counterclockwise_until_sees_object(int(speed), int(blob))
+
+

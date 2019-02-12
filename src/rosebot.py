@@ -285,51 +285,126 @@ class DriveSystem(object):
                 self.stop()
                 return
 
-        # -------------------------------------------------------------------------
-        # Methods for driving that use the infrared beacon sensor.
-        # -------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
+    # Methods for driving that use the infrared beacon sensor.
+    # -------------------------------------------------------------------------
 
-        def spin_clockwise_until_beacon_heading_is_nonnegative(self, speed):
-            """
-            Spins clockwise at the given speed until the heading to the Beacon
-            is nonnegative.  Requires that the user turn on the Beacon.
-            """
+    def spin_clockwise_until_beacon_heading_is_nonnegative(self, speed):
+        """
+        Spins clockwise at the given speed until the heading to the Beacon
+        is nonnegative.  Requires that the user turn on the Beacon.
+        """
 
-        def spin_counterclockwise_until_beacon_heading_is_nonpositive(self, speed):
-            """
-            Spins counter-clockwise at the given speed until the heading to the Beacon
-            is nonnegative.  Requires that the user turn on the Beacon.
-            """
+    def spin_counterclockwise_until_beacon_heading_is_nonpositive(self, speed):
+        """
+        Spins counter-clockwise at the given speed until the heading to the Beacon
+        is nonnegative.  Requires that the user turn on the Beacon.
+        """
 
-        def go_straight_to_the_beacon(self, inches, speed):
-            """
-            Goes forward at the given speed until the robot is less than the
-            given number of inches from the Beacon.
-            Assumes that the Beacon is turned on and placed straight ahead.
-            """
+    def go_straight_to_the_beacon(self, inches, speed):
+        """
+        Goes forward at the given speed until the robot is less than the
+        given number of inches from the Beacon.
+        Assumes that the Beacon is turned on and placed straight ahead.
+        """
 
-        # -------------------------------------------------------------------------
-        # Methods for driving that use the camera.
-        # -------------------------------------------------------------------------
-        def display_camera_data(self):
-            """
-            Prints on the Console the Blob data of the Blob that the camera sees
-            (if any).
-            """
+    # -------------------------------------------------------------------------
+    # Methods for driving that use the camera.
+    # -------------------------------------------------------------------------
+    def display_camera_data(self):
+        """
+        Prints on the Console the Blob data of the Blob that the camera sees
+        (if any).
+        """
+        print(self.sensor_system.camera.get_biggest_blob())
 
-        def spin_clockwise_until_sees_object(self, speed, area):
-            """
-            Spins clockwise at the given speed until the camera sees an object
-            of the trained color whose area is at least the given area.
-            Requires that the user train the camera on the color of the object.
-            """
+    def spin_clockwise_until_sees_object(self, speed, area):
+        """
+        Spins clockwise at the given speed until the camera sees an object
+        of the trained color whose area is at least the given area.
+        Requires that the user train the camera on the color of the object.
+        """
+        self.drive_system.go(speed, -speed)
+        while True:
+            if self.sensor_systeem.camera.get_biggest_blob().get_area() > area:
+                self.drive_system.stop()
+                return
 
-        def spin_counterclockwise_until_sees_object(self, speed, area):
-            """
-            Spins counter-clockwise at the given speed until the camera sees an object
-            of the trained color whose area is at least the given area.
-            Requires that the user train the camera on the color of the object.
-            """
+    def spin_counterclockwise_until_sees_object(self, speed, area):
+        """
+        Spins counter-clockwise at the given speed until the camera sees an object
+        of the trained color whose area is at least the given area.
+        Requires that the user train the camera on the color of the object.
+        """
+        self.drive_system.go(-speed, speed)
+        while True:
+            if self.sensor_systeem.camera.get_biggest_blob().get_area() > area:
+                self.drive_system.stop()
+                return
+
+
+    def bang_bang(self):
+        original = self.sensor_system.color_sensor.get_reflected_light_intensity()
+        left_speed = 100
+        right_speed = 100
+        self.go(left_speed, right_speed)
+        start_time = time.time()
+
+
+        while True:
+            current = self.sensor_system.color_sensor.get_reflected_light_intensity()
+            if abs(current-original) < 20:
+                self.go(left_speed, right_speed)
+            elif current-original < -20:
+                self.go(left_speed, -right_speed)
+            else:
+                self.go(-left_speed, right_speed)
+            time.sleep(0.1)
+            if time.time() > start_time + 5:
+                break
+
+    def p_control(self):
+        original = self.sensor_system.color_sensor.get_reflected_light_intensity()
+        left_speed = 100
+        right_speed = 100
+        self.go(left_speed, right_speed)
+        b = 50
+        k1 = -5
+        k2 = 5
+        start_time = time.time()
+        while True:
+            current = self.sensor_system.color_sensor.get_reflected_light_intensity()
+            error = current - original
+            left_speed = b + error * k1
+            right_speed = b + error * k2
+            self.go(left_speed, right_speed)
+            time.sleep(0.1)
+            if time.time() > start_time + 5:
+                break
+
+    def pd_control(self):
+        original = self.sensor_system.color_sensor.get_reflected_light_intensity()
+        left_speed = 100
+        right_speed = 100
+        self.go(left_speed, right_speed)
+        b = 50
+        k1 = -5
+        k2 = 5
+        kd1 = 5
+        kd2 = 5
+        start_time = time.time()
+        error = 0
+        while True:
+            current = self.sensor_system.color_sensor.get_reflected_light_intensity()
+            previous_error = error
+            error = current - original
+            delta = error - previous_error
+            left_speed = b + error * k1 + kd1 * delta
+            right_speed = b + error * k2 + kd2 * delta
+            self.go(left_speed, right_speed)
+            time.sleep(0.1)
+            if time.time() > start_time + 5:
+                break
 
 
 ###############################################################################
