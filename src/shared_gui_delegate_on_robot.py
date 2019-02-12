@@ -10,19 +10,15 @@
 import rosebot
 
 
-class StopHolder(object):
-    def __init__(self):
-        self.stop = False
-
 
 class Delegate(object):
-    def __init__(self, robot, stop_holder):
+    def __init__(self, robot):
         """
         :type robot: rosebot.RoseBot
         :type stop_holder: StopHolder
         """
         self.robot = robot
-        self.stop_holder = stop_holder
+        self.stop = False
 
     def go(self, left_motor_speed, right_motor_speed):
         print("Delegate receives go", left_motor_speed, right_motor_speed)
@@ -52,7 +48,7 @@ class Delegate(object):
 
     def quit(self):
         print("Delegate receives quit")
-        self.stop_holder.stop = True
+        self.stop = True
 
     def drive_until_closer(self, distance, speed):
         print("Delegate receives drive_until_closer", distance, speed)
