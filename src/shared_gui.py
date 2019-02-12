@@ -247,7 +247,7 @@ def get_line_following_frame(window, mqtt_sender):
     frame = ttk.Frame(window, padding=10, borderwidth=5, relief="ridge")
     frame.grid()
     frame_label = ttk.Label(frame, text="Line following")
-    frame_label.grid(row=0, column=1)
+    frame_label.grid(row=0, column=0)
     # label1 = ttk.Label(frame, text="Seconds:")
     # label1.grid(row=1, column=0)
     # entry1 = ttk.Entry(frame, width=8)
@@ -270,7 +270,7 @@ def get_line_following_frame(window, mqtt_sender):
     p_control_button["command"] = lambda: handle_p_control(mqtt_sender)
 
     pd_control_button = ttk.Button(frame, text="PD-control drive")
-    pd_control_button.grid(row=5, column=0)
+    pd_control_button.grid(row=6, column=0)
     pd_control_button["command"] = lambda: handle_pd_control(mqtt_sender)
     return frame
 
